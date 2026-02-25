@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OARCRAFT v0.4</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0A0E17;color:#E2E8F0;min-height:100vh}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#1E293B;border-radius:3px}
+button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inherit}
+
+header{background:linear-gradient(180deg,#111827,#0A0E17);border-bottom:1px solid #1E293B;padding:0 24px;position:sticky;top:0;z-index:100}
+.hdr{display:flex;align-items:center;justify-content:space-between;height:56px;max-width:1240px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-i{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#00E5A0,#0EA5E9);display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 0 16px rgba(0,229,160,.2)}
+.logo-t{font-size:17px;font-weight:800;letter-spacing:2px}.logo-t b{color:#00E5A0}
+.logo-s{font-size:8px;color:#64748B;letter-spacing:3px;text-transform:uppercase}
+nav{display:flex;gap:1px;height:56px;overflow-x:auto}
+nav button{background:none;border:none;padding:0 12px;height:100%;display:flex;align-items:center;gap:4px;font-size:11px;color:#64748B;transition:.2s;border-bottom:2px solid transparent;white-space:nowrap}
+nav button:hover{color:#E2E8F0}nav button.on{color:#00E5A0;font-weight:700;border-bottom-color:#00E5A0}
+
+main{max-width:1240px;margin:0 auto;padding:16px 20px 40px}
+.tab{display:none}.tab.on{display:block;animation:fi .3s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.cd{background:#111827;border-radius:12px;border:1px solid #1E293B;padding:16px;margin-bottom:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+
+.mt{text-align:center}.mt-l{font-size:9px;color:#64748B;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.mt-v{font-size:20px;font-weight:800;font-family:monospace;line-height:1}.mt-u{font-size:10px;font-weight:400;color:#64748B}
+.mt-s{font-size:9px;color:#475569;margin-top:2px}
+
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+.sh-l{display:flex;align-items:center;gap:6px}.sh em{font-style:normal;font-size:15px}.sh h2{font-size:13px;font-weight:700}
+.sh-s{font-size:10px;color:#64748B;margin:-6px 0 12px 0}
+
+.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:7px;font-size:11px;font-weight:600;border:none;transition:.2s}
+.btn-p{background:#00E5A0;color:#0A0E17}.btn-p:hover{background:#00cc8e}
+.btn-s{background:transparent;color:#64748B;border:1px solid #1E293B}.btn-s:hover{border-color:#00E5A0;color:#00E5A0}
+.btn-d{background:transparent;color:#FF4757;border:1px solid #FF475733}.btn-d:hover{background:#FF475715}
+.btn-w{background:#F59E0B22;color:#F59E0B;border:1px solid #F59E0B33}.btn-w:hover{background:#F59E0B33}
+.btn-i{background:#0EA5E922;color:#0EA5E9;border:1px solid #0EA5E933}.btn-i:hover{background:#0EA5E933}
+.btn-sm{padding:3px 8px;font-size:10px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+
+table{width:100%;border-collapse:separate;border-spacing:0 2px}
+th{text-align:left;padding:6px 8px;font-size:9px;font-weight:600;color:#64748B;text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid #1E293B}
+td{padding:7px 8px;font-size:11px}tr:hover td{background:rgba(0,229,160,.02)}.mono{font-family:monospace}
+
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center;animation:fi .2s ease}
+.modal{background:#111827;border:1px solid #1E293B;border-radius:14px;padding:22px;width:92%;max-width:560px;max-height:88vh;overflow-y:auto}
+.modal h3{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.fg{margin-bottom:10px}
+.fg label{display:block;font-size:10px;color:#64748B;margin-bottom:3px;text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select,.fg textarea{width:100%;background:#0A0E17;border:1px solid #1E293B;border-radius:7px;padding:7px 10px;color:#E2E8F0;font-size:12px;outline:none;transition:.2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:#00E5A0}
+.fg textarea{resize:vertical;min-height:50px}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fg-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.modal-btns{display:flex;gap:6px;justify-content:flex-end;margin-top:14px}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:600}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%}
+select option{background:#0A0E17}
+
+/* Category colors */
+.cat-otw{color:#0EA5E9}.cat-erg{color:#00E5A0}.cat-str{color:#F59E0B}.cat-core{color:#8B5CF6}.cat-run{color:#EF4444}.cat-bike{color:#22C55E}.cat-oth{color:#64748B}
+
+/* Session row */
+.sr{display:grid;grid-template-columns:62px 52px 55px 1fr 70px 50px 54px;gap:5px;padding:8px;border-radius:6px;align-items:center;transition:.15s;font-size:11px}
+.sr:hover{background:rgba(0,229,160,.02)}
+
+/* Plan row */
+.pr{display:grid;grid-template-columns:40px 5px 1fr 1fr 54px;gap:8px;align-items:center;padding:9px 10px;border-radius:7px;margin-bottom:2px;cursor:pointer;transition:.15s}
+.pr:hover{background:rgba(0,229,160,.03)}.pr-b{width:5px;height:24px;border-radius:3px}
+
+/* Athlete selector */
+.ath-sel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.ath-chip{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;border:1px solid #1E293B;background:transparent;color:#64748B;transition:.2s}
+.ath-chip:hover{border-color:#00E5A0;color:#E2E8F0}
+.ath-chip.on{background:#00E5A018;border-color:#00E5A0;color:#00E5A0}
+
+/* Dropzone */
+.dropzone{border:2px dashed #1E293B;border-radius:10px;padding:24px;text-align:center;transition:.3s;cursor:pointer}
+.dropzone:hover,.dropzone.over{border-color:#00E5A0;background:rgba(0,229,160,.03)}
+.dropzone em{font-size:24px;display:block;margin-bottom:6px;font-style:normal}
+.dropzone p{font-size:12px;color:#64748B}.dropzone small{font-size:10px;color:#475569}
+.imp-res{margin-top:10px;padding:10px;border-radius:7px;font-size:11px;line-height:1.5}
+.imp-ok{background:rgba(0,229,160,.08);border:1px solid #00E5A033;color:#00E5A0}
+.imp-err{background:rgba(255,71,87,.08);border:1px solid #FF475733;color:#FF4757}
+
+/* Zone ref */
+.zr{display:grid;grid-template-columns:48px 85px 85px 1fr;align-items:center;gap:5px;padding:6px 8px;border-radius:6px;margin-bottom:4px}
+.ev{margin-top:10px;padding:8px 10px;border-radius:6px;background:rgba(0,229,160,.03);border-left:3px solid #00E5A0;font-size:10px;color:#64748B;line-height:1.6}.ev b{color:#00E5A0}
+
+svg text{font-family:-apple-system,sans-serif}
+.toast{position:fixed;bottom:20px;right:20px;background:#111827;border:1px solid #00E5A0;border-radius:8px;padding:10px 16px;font-size:12px;color:#00E5A0;z-index:300;animation:fi .3s ease;box-shadow:0 4px 16px rgba(0,229,160,.12)}
+.toast.err{border-color:#FF4757;color:#FF4757}
+.empty{text-align:center;color:#64748B;padding:24px;font-size:12px}
+footer{border-top:1px solid #1E293B;padding:10px 20px;display:flex;justify-content:space-between;font-size:8px;color:#475569}
+</style>
+</head>
+<body>
+<header><div class="hdr">
+<div class="logo"><div class="logo-i">⛵</div><div><div class="logo-t">OAR<b>CRAFT</b></div><div class="logo-s">v0.4 — Multi-Category + Athlete View</div></div></div>
+<nav id="nv"></nav>
+</div></header>
+<main id="mn"></main>
+<div id="modal"></div><div id="toast"></div>
+<footer><span>OARCRAFT v0.4</span><span>localStorage + JSON/CSV 💾</span></footer>
+
+<script>
+// ==================== CATEGORIES ====================
+var CATS=[
+  {id:"OTW",nm:"水上",ic:"🚣",c:"#0EA5E9",fields:["split","rate","hr","dist","dur"]},
+  {id:"ERG",nm:"エルゴ",ic:"🏋️",c:"#00E5A0",fields:["split","rate","hr","dist","dur"]},
+  {id:"STR",nm:"筋トレ",ic:"💪",c:"#F59E0B",fields:["dur","exercises","sets","reps","weight"]},
+  {id:"CORE",nm:"体幹",ic:"🧘",c:"#8B5CF6",fields:["dur","exercises"]},
+  {id:"RUN",nm:"ラン",ic:"🏃",c:"#EF4444",fields:["hr","dist","dur","pace"]},
+  {id:"BIKE",nm:"バイク",ic:"🚴",c:"#22C55E",fields:["hr","dist","dur","pace"]},
+  {id:"OTHER",nm:"その他",ic:"📌",c:"#64748B",fields:["dur"]}
+];
+function catOf(id){return CATS.find(function(c){return c.id===id})||CATS[6]}
+function catC(id){return catOf(id).c}
+function catIc(id){return catOf(id).ic}
+function catBdg(id){var c=catOf(id);return'<span class="badge" style="background:'+c.c+'18;color:'+c.c+';border:1px solid '+c.c+'33">'+c.ic+' '+c.nm+'</span>'}
+
+// ==================== STATE ====================
+var DEF_CR=[
+{seat:"Bow",nm:"田中 翔太",erg:"6:28.4",w:78,pw:385,st:"good",tr:"up",u1:"2:05.3",at:"1:48.2"},
+{seat:"2",nm:"佐藤 健一",erg:"6:22.1",w:82,pw:402,st:"good",tr:"up",u1:"2:03.8",at:"1:46.5"},
+{seat:"3",nm:"山田 大輝",erg:"6:19.7",w:85,pw:418,st:"watch",tr:"flat",u1:"2:02.5",at:"1:45.8"},
+{seat:"4",nm:"鈴木 拓海",erg:"6:15.3",w:88,pw:435,st:"good",tr:"up",u1:"2:01.1",at:"1:44.2"},
+{seat:"5",nm:"中村 陽介",erg:"6:18.0",w:84,pw:412,st:"good",tr:"up",u1:"2:02.0",at:"1:45.1"},
+{seat:"6",nm:"小林 龍太",erg:"6:12.8",w:90,pw:445,st:"good",tr:"up",u1:"2:00.5",at:"1:43.5"},
+{seat:"7",nm:"加藤 悠真",erg:"6:10.5",w:91,pw:458,st:"injury",tr:"down",u1:"2:00.1",at:"1:42.8"},
+{seat:"Str",nm:"渡辺 蒼",erg:"6:16.9",w:86,pw:425,st:"good",tr:"up",u1:"2:01.8",at:"1:44.8"},
+{seat:"Cox",nm:"伊藤 美咲",erg:"—",w:55,pw:0,st:"good",tr:"flat",u1:"—",at:"—"}];
+
+var DEF_SS=[
+{d:"2026-03-20",cat:"OTW",zone:"AT",who:"全員",ds:"2000m×4",sp:"1:45.2",r:26,nt:"良好",hr:168,dist:8000,dur:32},
+{d:"2026-03-19",cat:"OTW",zone:"UT1",who:"全員",ds:"16km",sp:"2:02.8",r:20,nt:"風あり",hr:152,dist:16000,dur:65},
+{d:"2026-03-18",cat:"OTW",zone:"VO2",who:"全員",ds:"1000m×6",sp:"1:38.5",r:32,nt:"5本目崩れ",hr:178,dist:6000,dur:24},
+{d:"2026-03-18",cat:"STR",zone:"—",who:"全員",ds:"",sp:"",r:0,nt:"デッドリフト5×5 / ベンチプル5×5",hr:0,dist:0,dur:60,exercises:"DL,BP",sets:5,reps:5,weight:"80kg"},
+{d:"2026-03-17",cat:"OTW",zone:"UT1",who:"全員",ds:"14km",sp:"2:03.5",r:19,nt:"技術練習",hr:150,dist:14000,dur:58},
+{d:"2026-03-17",cat:"CORE",zone:"—",who:"全員",ds:"",sp:"",r:0,nt:"プランク/サイド/バードドッグ",hr:0,dist:0,dur:30,exercises:"プランク系"},
+{d:"2026-03-16",cat:"ERG",zone:"UT2",who:"田中 翔太",ds:"10000m",sp:"2:08.0",r:18,nt:"回復漕ぎ",hr:138,dist:10000,dur:42},
+{d:"2026-03-16",cat:"RUN",zone:"UT2",who:"佐藤 健一",ds:"8km",sp:"",r:0,nt:"ジョグ",hr:142,dist:8000,dur:40,pace:"5:00"},
+{d:"2026-03-15",cat:"OTW",zone:"Race",who:"全員",ds:"2000m",sp:"1:40.1",r:36,nt:"模擬レース",hr:182,dist:2000,dur:7}];
+
+var DEF_PL=[
+{dy:"月",am:"UT1 水上 16-18km",pm:"エルゴ UT2 40min + ウェイト",z:"UT1",l:3},
+{dy:"火",am:"AT インターバル 2000m×4",pm:"体幹・補強",z:"AT",l:5},
+{dy:"水",am:"UT1 水上 14-16km（技術）",pm:"エルゴ UT2 30min + ウェイト",z:"UT1",l:3},
+{dy:"木",am:"VO2max 1000m×5-6",pm:"軽い補強",z:"VO2",l:5},
+{dy:"金",am:"UT1 水上 12-14km（軽め）",pm:"ストレッチ",z:"UT1",l:2},
+{dy:"土",am:"レースペース 1500m×3",pm:"ウェイト（軽め）",z:"Race",l:4},
+{dy:"日",am:"OFF",pm:"—",z:"OFF",l:0}];
+
+function ld(k,d){try{var v=localStorage.getItem("oc_"+k);if(!v)return JSON.parse(JSON.stringify(d));var p=JSON.parse(v);return p}catch(e){return JSON.parse(JSON.stringify(d))}}
+function sv2(k,v){try{localStorage.setItem("oc_"+k,JSON.stringify(v))}catch(e){}}
+
+// Migrate v0.3 sessions (add cat field if missing)
+function migrateSessions(ss){return ss.map(function(s){if(!s.cat){s.cat="OTW";if(s.tp){var tp=s.tp;if(tp==="AT"||tp==="UT1"||tp==="UT2"||tp==="VO2"||tp==="Race"||tp==="AN"){s.zone=tp}}}if(!s.zone)s.zone=s.tp||"—";if(!s.who)s.who="全員";return s})}
+
+var crew=ld("crew",DEF_CR);
+var sessions=migrateSessions(ld("sessions",DEF_SS));
+var plan=ld("plan",DEF_PL);
+var ergTests=ld("ergtests",[]);
+function saveCr(){sv2("crew",crew)}function saveSs(){sv2("sessions",sessions)}function savePl(){sv2("plan",plan)}function saveEt(){sv2("ergtests",ergTests)}
+
+// ==================== HELPERS ====================
+function $(id){return document.getElementById(id)}
+function esc(s){if(!s)return"";var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function fmtD(d){if(!d)return"—";var p=d.split("-");return(p[1]||"")+"/"+( p[2]||"")}
+function toast(m,e){var t=$("toast");t.innerHTML='<div class="toast'+(e?' err':'')+'">'+m+'</div>';setTimeout(function(){t.innerHTML=""},2400)}
+function sc(s){return{good:"#00E5A0",watch:"#FFB020",injury:"#FF4757"}[s]||"#64748B"}
+function trS(t){return t==="up"?'<span style="color:#00E5A0">▲</span>':t==="down"?'<span style="color:#FF4757">▼</span>':'<span style="color:#64748B">━</span>'}
+function dot(s){var c=sc(s);return'<span class="dot" style="background:'+c+';box-shadow:0 0 5px '+c+'"></span>'}
+function zoneBdg(z){var cs={UT1:"#3B82F6",UT2:"#22C55E",AT:"#F59E0B",VO2:"#EF4444",Race:"#00E5A0",AN:"#8B5CF6"};var c=cs[z]||"#475569";return z&&z!=="—"?'<span class="badge" style="background:'+c+'18;color:'+c+';border:1px solid '+c+'33">'+z+'</span>':''}
+
+// SVG
+function _s(tag,a,p){var e=document.createElementNS("http://www.w3.org/2000/svg",tag);if(a)for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
+function mkS(el,w,h){el.innerHTML="";var s=_s("svg",{width:"100%",height:h,viewBox:"0 0 "+w+" "+h});el.appendChild(s);return s}
+function openM(h){$("modal").innerHTML='<div class="modal-bg" onclick="if(event.target===this)closeM()"><div class="modal">'+h+'</div></div>'}
+function closeM(){$("modal").innerHTML=""}
+
+function crewNames(){return crew.filter(function(c){return c.seat!=="Cox"}).map(function(c){return c.nm})}
+
+// ==================== NAV ====================
+var tabs=[{id:"crew",lb:"クルー",ic:"⛵"},{id:"sess",lb:"記録",ic:"📝"},{id:"ath",lb:"選手分析",ic:"👤"},{id:"chart",lb:"チーム分析",ic:"📊"},{id:"plan",lb:"週間計画",ic:"🗓"},{id:"imp",lb:"インポート",ic:"📥"},{id:"data",lb:"データ",ic:"💾"}];
+var curTab="crew";
+function initNav(){var n=$("nv");n.innerHTML=tabs.map(function(t){return'<button data-t="'+t.id+'"'+(t.id===curTab?' class="on"':'')+'>'+t.ic+' '+t.lb+'</button>'}).join("");n.onclick=function(e){var b=e.target.closest("button");if(!b)return;curTab=b.dataset.t;render()}}
+
+// ==================== RENDER ====================
+function render(){document.querySelectorAll("nav button").forEach(function(b){b.className=b.dataset.t===curTab?"on":""});var m=$("mn");
+if(curTab==="crew")rCrew(m);else if(curTab==="sess")rSess(m);else if(curTab==="ath")rAth(m);
+else if(curTab==="chart")rChart(m);else if(curTab==="plan")rPlan(m);else if(curTab==="imp")rImp(m);else if(curTab==="data")rData(m);
+requestAnimationFrame(drawAll)}
+function drawAll(){if(curTab==="crew")drawPow();if(curTab==="ath")drawAthCharts();if(curTab==="chart"){drawCatDist();drawWeekVol();drawZoneDist();drawHRTrend()}}
+
+// ==================== CREW ====================
+function rCrew(m){var h='<div class="tab on"><div class="cd"><div class="sh"><div class="sh-l"><em>⛵</em><h2>クルー管理</h2></div><button class="btn btn-p" onclick="openCF(-1)">＋ 追加</button></div><table><thead><tr>';
+["席","名前","2K","kg","W","UT1","AT","","",""].forEach(function(x){h+='<th>'+x+'</th>'});
+h+='</tr></thead><tbody>';crew.forEach(function(c,i){h+='<tr style="cursor:pointer" onclick="openCF('+i+')"><td class="mono" style="color:#00E5A0;font-weight:700">'+esc(c.seat)+'</td><td style="font-weight:600">'+esc(c.nm)+'</td><td class="mono" style="font-weight:700">'+esc(c.erg)+'</td><td class="mono" style="color:#64748B">'+c.w+'</td><td class="mono" style="color:#64748B">'+(c.pw||"—")+'</td><td class="mono" style="color:#3B82F6;font-size:10px">'+esc(c.u1)+'</td><td class="mono" style="color:#F59E0B;font-size:10px">'+esc(c.at)+'</td><td>'+dot(c.st)+'</td><td>'+trS(c.tr)+'</td><td><button class="btn btn-d btn-sm" onclick="event.stopPropagation();delCr('+i+')">×</button></td></tr>'});
+h+='</tbody></table></div><div class="cd"><div class="sh"><div class="sh-l"><em>⚡</em><h2>パワー比較</h2></div></div><div id="cp"></div></div></div>';m.innerHTML=h}
+
+function openCF(i){var c=i>=0?crew[i]:{seat:"",nm:"",erg:"",w:75,pw:0,st:"good",tr:"flat",u1:"",at:""};
+var h='<h3>⛵ '+(i>=0?"編集":"追加")+'</h3><div class="fg-row"><div class="fg"><label>シート</label><input id="fs" value="'+esc(c.seat)+'"></div><div class="fg"><label>名前</label><input id="fn" value="'+esc(c.nm)+'"></div></div><div class="fg-row3"><div class="fg"><label>2K</label><input id="fe" value="'+esc(c.erg)+'"></div><div class="fg"><label>体重</label><input id="fw" type="number" value="'+c.w+'"></div><div class="fg"><label>パワー</label><input id="fp" type="number" value="'+c.pw+'"></div></div><div class="fg-row3"><div class="fg"><label>UT1</label><input id="fu" value="'+esc(c.u1)+'"></div><div class="fg"><label>AT</label><input id="fa" value="'+esc(c.at)+'"></div><div class="fg"><label>状態</label><select id="ft"><option value="good"'+(c.st==="good"?" selected":"")+'>Good</option><option value="watch"'+(c.st==="watch"?" selected":"")+'>Watch</option><option value="injury"'+(c.st==="injury"?" selected":"")+'>Injury</option></select></div></div><div class="fg"><label>傾向</label><select id="ftr"><option value="up"'+(c.tr==="up"?" selected":"")+'>▲</option><option value="flat"'+(c.tr==="flat"?" selected":"")+'>━</option><option value="down"'+(c.tr==="down"?" selected":"")+'>▼</option></select></div><div class="modal-btns"><button class="btn btn-s" onclick="closeM()">×</button><button class="btn btn-p" onclick="saveCF('+i+')">保存</button></div>';openM(h)}
+function saveCF(i){var o={seat:$("fs").value.trim()||"?",nm:$("fn").value.trim()||"未入力",erg:$("fe").value.trim()||"—",w:parseInt($("fw").value)||0,pw:parseInt($("fp").value)||0,st:$("ft").value,tr:$("ftr").value,u1:$("fu").value.trim()||"—",at:$("fa").value.trim()||"—"};if(i>=0)crew[i]=o;else crew.push(o);saveCr();closeM();render();toast("保存")}
+function delCr(i){if(!confirm("削除？"))return;crew.splice(i,1);saveCr();render()}
+
+function drawPow(){var el=$("cp");if(!el)return;var rw=crew.filter(function(m){return m.pw>0}).sort(function(a,b){return b.pw-a.pw});
+if(!rw.length){el.innerHTML='<div class="empty">パワーデータなし</div>';return}
+var W=650,H=rw.length*26+26,ml=68,mr=48,mt=12,g=mkS(el,W,H);var mx=Math.max.apply(null,rw.map(function(m){return m.pw}))+30,mn=Math.min.apply(null,rw.map(function(m){return m.pw}))-40;
+rw.forEach(function(m,i){var y=mt+i*26,bw=Math.max((m.pw-mn)/(mx-mn)*(W-ml-mr),4),c=m.st==="injury"?"#FF4757":m.pw>=440?"#00E5A0":m.pw>=410?"#0EA5E9":"#3B82F6";
+_s("text",{x:ml-5,y:y+12,"text-anchor":"end",fill:"#94A3B8","font-size":"9"},g).textContent=m.nm.split(" ")[0];
+_s("rect",{x:ml,y:y+1,width:bw,height:14,fill:c,rx:"3",opacity:".85"},g);
+_s("text",{x:ml+bw+5,y:y+12,fill:c,"font-size":"9","font-weight":"600"},g).textContent=m.pw+"W"})}
+
+// ==================== SESSIONS ====================
+var sessFilter="ALL";
+function rSess(m){var h='<div class="tab on"><div class="cd"><div class="sh"><div class="sh-l"><em>📝</em><h2>トレーニング記録</h2></div><button class="btn btn-p" onclick="openSF(-1)">＋ 記録追加</button></div>';
+// Category filter
+h+='<div class="btns" style="margin-bottom:12px"><button class="btn '+(sessFilter==="ALL"?"btn-p":"btn-s")+' btn-sm" onclick="sessFilter=\'ALL\';render()">全て</button>';
+CATS.forEach(function(c){h+='<button class="btn '+(sessFilter===c.id?"btn-p":"btn-s")+' btn-sm" onclick="sessFilter=\''+c.id+'\';render()">'+c.ic+' '+c.nm+'</button>'});
+h+='</div>';
+// Header
+h+='<div class="sr" style="padding:4px 8px;font-size:8px;color:#475569;text-transform:uppercase;letter-spacing:.7px"><span>日付</span><span>カテゴリ</span><span>ゾーン</span><span>内容</span><span>対象</span><span>時間</span><span></span></div>';
+var filtered=sessions.filter(function(s){return sessFilter==="ALL"||s.cat===sessFilter});
+filtered.forEach(function(s,fi){var idx=sessions.indexOf(s);
+h+='<div class="sr" style="background:'+(fi%2===0?"#0d1422":"transparent")+';cursor:pointer" onclick="openSF('+idx+')">';
+h+='<span class="mono" style="font-size:10px">'+fmtD(s.d)+'</span>';
+h+=catBdg(s.cat);
+h+=zoneBdg(s.zone);
+h+='<span style="font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(s.ds?esc(s.ds):"")+(s.sp&&s.sp!=="—"?' <span class="mono" style="color:#00E5A0">'+esc(s.sp)+'</span>':"")+' '+esc(s.nt)+'</span>';
+h+='<span style="font-size:10px;color:#64748B">'+esc(s.who||"")+'</span>';
+h+='<span class="mono" style="font-size:10px;color:#64748B">'+(s.dur?s.dur+'m':'—')+'</span>';
+h+='<button class="btn btn-d btn-sm" onclick="event.stopPropagation();delSs('+idx+')">×</button>';
+h+='</div>'});
+if(!filtered.length)h+='<div class="empty">該当なし</div>';
+h+='</div></div>';m.innerHTML=h}
+
+function openSF(idx){var s=idx>=0?sessions[idx]:{d:new Date().toISOString().slice(0,10),cat:"OTW",zone:"UT1",who:"全員",ds:"",sp:"",r:0,nt:"",hr:0,dist:0,dur:0,exercises:"",sets:0,reps:0,weight:"",pace:""};
+var zones=["UT2","UT1","AT","VO2","Race","AN","—"];
+var names=["全員"].concat(crewNames());
+var h='<h3>📝 '+(idx>=0?"編集":"記録追加")+'</h3>';
+// Cat selector
+h+='<div class="fg"><label>カテゴリ</label><div class="btns" id="cat-btns">';
+CATS.forEach(function(c){h+='<button class="btn '+(s.cat===c.id?"btn-p":"btn-s")+' btn-sm" onclick="switchCat(\''+c.id+'\')">'+c.ic+' '+c.nm+'</button>'});
+h+='</div></div>';
+h+='<input type="hidden" id="scat" value="'+s.cat+'">';
+h+='<div class="fg-row3"><div class="fg"><label>日付</label><input id="sd" type="date" value="'+s.d+'"></div><div class="fg"><label>ゾーン</label><select id="sz">';
+zones.forEach(function(z){h+='<option value="'+z+'"'+(s.zone===z?" selected":"")+'>'+z+'</option>'});
+h+='</select></div><div class="fg"><label>対象選手</label><select id="sw">';
+names.forEach(function(n){h+='<option value="'+n+'"'+((s.who||"全員")===n?" selected":"")+'>'+n+'</option>'});
+h+='</select></div></div>';
+// Common fields
+h+='<div id="sf-common"><div class="fg-row"><div class="fg"><label>内容/距離</label><input id="sds" value="'+esc(s.ds)+'"></div><div class="fg"><label>時間(分)</label><input id="sdu" type="number" value="'+(s.dur||0)+'"></div></div></div>';
+// OTW/ERG fields
+h+='<div id="sf-row" style="display:'+(["OTW","ERG"].indexOf(s.cat)>=0?"grid":"none")+'"><div class="fg-row3"><div class="fg"><label>Split</label><input id="ssp" value="'+esc(s.sp)+'"></div><div class="fg"><label>Rate</label><input id="sr" type="number" value="'+(s.r||0)+'"></div><div class="fg"><label>HR</label><input id="shr" type="number" value="'+(s.hr||0)+'"></div></div><div class="fg-row"><div class="fg"><label>距離(m)</label><input id="sdi" type="number" value="'+(s.dist||0)+'"></div><div class="fg"><label></label></div></div></div>';
+// STR fields
+h+='<div id="sf-str" style="display:'+(s.cat==="STR"?"grid":"none")+'"><div class="fg-row3"><div class="fg"><label>種目</label><input id="sex" value="'+esc(s.exercises)+'"></div><div class="fg"><label>セット×レップ</label><input id="ssr" value="'+(s.sets||"")+("×")+(s.reps||"")+'"></div><div class="fg"><label>重量</label><input id="swt" value="'+esc(s.weight)+'"></div></div></div>';
+// RUN/BIKE
+h+='<div id="sf-run" style="display:'+(["RUN","BIKE"].indexOf(s.cat)>=0?"grid":"none")+'"><div class="fg-row3"><div class="fg"><label>距離(m)</label><input id="sdi2" type="number" value="'+(s.dist||0)+'"></div><div class="fg"><label>ペース(/km)</label><input id="spa" value="'+esc(s.pace)+'"></div><div class="fg"><label>HR</label><input id="shr2" type="number" value="'+(s.hr||0)+'"></div></div></div>';
+h+='<div class="fg"><label>メモ</label><textarea id="snt">'+esc(s.nt)+'</textarea></div>';
+h+='<div class="modal-btns"><button class="btn btn-s" onclick="closeM()">×</button><button class="btn btn-p" onclick="saveSF('+idx+')">保存</button></div>';
+openM(h)}
+
+function switchCat(id){$("scat").value=id;
+var isRow=id==="OTW"||id==="ERG",isStr=id==="STR",isRun=id==="RUN"||id==="BIKE";
+$("sf-row").style.display=isRow?"grid":"none";
+$("sf-str").style.display=isStr?"grid":"none";
+$("sf-run").style.display=isRun?"grid":"none";
+document.querySelectorAll("#cat-btns button").forEach(function(b){b.className="btn btn-s btn-sm"});
+event.target.className="btn btn-p btn-sm"}
+
+function saveSF(idx){var cat=$("scat").value;
+var o={d:$("sd").value||new Date().toISOString().slice(0,10),cat:cat,zone:$("sz").value,who:$("sw").value,ds:$("sds").value.trim(),dur:parseInt($("sdu").value)||0,nt:$("snt").value.trim(),sp:"",r:0,hr:0,dist:0,exercises:"",sets:0,reps:0,weight:"",pace:""};
+if(cat==="OTW"||cat==="ERG"){o.sp=$("ssp").value.trim();o.r=parseInt($("sr").value)||0;o.hr=parseInt($("shr").value)||0;o.dist=parseInt($("sdi").value)||0}
+else if(cat==="STR"){o.exercises=$("sex").value.trim();var sr=$("ssr").value.split("×");o.sets=parseInt(sr[0])||0;o.reps=parseInt(sr[1])||0;o.weight=$("swt").value.trim()}
+else if(cat==="RUN"||cat==="BIKE"){o.dist=parseInt($("sdi2").value)||0;o.pace=$("spa").value.trim();o.hr=parseInt($("shr2").value)||0}
+if(idx>=0)sessions[idx]=o;else sessions.unshift(o);
+sessions.sort(function(a,b){return b.d.localeCompare(a.d)});saveSs();closeM();render();toast("保存")}
+function delSs(i){if(!confirm("削除？"))return;sessions.splice(i,1);saveSs();render()}
+
+// ==================== ATHLETE VIEW ====================
+var selAth="";
+function rAth(m){
+  var names=crewNames();if(!selAth&&names.length)selAth=names[0];
+  var h='<div class="tab on"><div class="cd"><div class="sh"><div class="sh-l"><em>👤</em><h2>選手別分析</h2></div></div>';
+  h+='<div class="ath-sel">';
+  names.forEach(function(n){h+='<button class="ath-chip'+(selAth===n?" on":"")+'" onclick="selAth=\''+esc(n)+'\';render()">'+esc(n)+'</button>'});
+  h+='</div></div>';
+
+  // Athlete stats
+  var athSess=sessions.filter(function(s){return s.who===selAth||s.who==="全員"});
+  var catCounts={};CATS.forEach(function(c){catCounts[c.id]=0});
+  var totalDur=0,totalDist=0;
+  athSess.forEach(function(s){catCounts[s.cat]=(catCounts[s.cat]||0)+1;totalDur+=(s.dur||0);totalDist+=(s.dist||0)});
+
+  h+='<div class="g4">';
+  h+=mC("総セッション",athSess.length,"件","#00E5A0");
+  h+=mC("総時間",totalDur,"分","#0EA5E9");
+  h+=mC("総距離",(totalDist/1000).toFixed(1),"km","#F59E0B");
+  var crM=crew.find(function(c){return c.nm===selAth});
+  h+=mC("2Kスコア",crM?crM.erg:"—","","#8B5CF6");
+  h+='</div>';
+
+  // Category breakdown
+  h+='<div class="g2"><div class="cd"><div class="sh"><div class="sh-l"><em>📊</em><h2>カテゴリ別セッション数</h2></div></div><div id="ac-cat"></div></div>';
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>📈</em><h2>週間トレーニング時間</h2></div></div><div id="ac-week"></div></div></div>';
+
+  // Recent sessions
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>📋</em><h2>最近のセッション</h2></div></div>';
+  athSess.slice(0,15).forEach(function(s,i){
+    h+='<div style="display:grid;grid-template-columns:58px 52px 48px 1fr 50px;gap:5px;padding:6px 8px;border-radius:5px;background:'+(i%2===0?"#0d1422":"transparent")+';font-size:10px;align-items:center">';
+    h+='<span class="mono" style="color:#64748B">'+fmtD(s.d)+'</span>';
+    h+=catBdg(s.cat);
+    h+=zoneBdg(s.zone);
+    h+='<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(s.ds?esc(s.ds)+" ":"")+(s.sp&&s.sp!=="—"?'<span class="mono" style="color:#00E5A0">'+esc(s.sp)+'</span> ':"")+esc(s.nt)+'</span>';
+    h+='<span class="mono" style="color:#64748B">'+(s.dur?s.dur+'m':'')+'</span></div>'});
+  if(!athSess.length)h+='<div class="empty">セッションなし</div>';
+  h+='</div></div>';m.innerHTML=h}
+function mC(l,v,u,c){return'<div class="cd"><div class="mt"><div class="mt-l">'+l+'</div><div class="mt-v" style="color:'+c+'">'+v+'<span class="mt-u"> '+u+'</span></div></div></div>'}
+
+function drawAthCharts(){
+  var athSess=sessions.filter(function(s){return s.who===selAth||s.who==="全員"});
+  // Cat distribution bar chart
+  var el=$("ac-cat");if(el){
+    var cats={};CATS.forEach(function(c){cats[c.id]=0});athSess.forEach(function(s){cats[s.cat]=(cats[s.cat]||0)+1});
+    var W=400,H=CATS.length*22+12,ml=52,mr=40,mt=6,g=mkS(el,W,H);
+    var mx=Math.max.apply(null,CATS.map(function(c){return cats[c.id]}))||1;
+    CATS.forEach(function(c,i){var y=mt+i*22,v=cats[c.id],bw=Math.max(v/mx*(W-ml-mr),2);
+      _s("text",{x:ml-4,y:y+13,"text-anchor":"end",fill:c.c,"font-size":"9","font-weight":"600"},g).textContent=c.ic+" "+c.nm;
+      _s("rect",{x:ml,y:y+2,width:bw,height:14,fill:c.c,rx:"3",opacity:".8"},g);
+      if(v>0)_s("text",{x:ml+bw+4,y:y+13,fill:c.c,"font-size":"9"},g).textContent=v})}
+
+  // Weekly training hours stacked
+  var el2=$("ac-week");if(el2){
+    var weeks={};athSess.forEach(function(s){if(!s.d)return;var wk=getWeek(s.d);if(!weeks[wk])weeks[wk]={};if(!weeks[wk][s.cat])weeks[wk][s.cat]=0;weeks[wk][s.cat]+=(s.dur||0)});
+    var wks=Object.keys(weeks).sort().slice(-8);
+    if(!wks.length){el2.innerHTML='<div class="empty">データなし</div>';return}
+    var W=400,H=150,ml=38,mr=8,mt=10,mb=24,cw=W-ml-mr,ch=H-mt-mb,g=mkS(el2,W,H);
+    var mx2=0;wks.forEach(function(w){var t=0;CATS.forEach(function(c){t+=(weeks[w][c.id]||0)});if(t>mx2)mx2=t});mx2=mx2||1;
+    var bw=Math.min(cw/wks.length*.6,35),gap=cw/wks.length;
+    wks.forEach(function(w,wi){var x=ml+wi*gap+gap*.2,cy=mt+ch;
+      CATS.forEach(function(c){var v=(weeks[w][c.id]||0);if(v<=0)return;var h2=v/mx2*ch;
+        _s("rect",{x:x,y:cy-h2,width:bw,height:Math.max(h2,1),fill:c.c,opacity:".8"},g);cy-=h2});
+      _s("text",{x:x+bw/2,y:H-6,"text-anchor":"middle",fill:"#64748B","font-size":"8"},g).textContent=w.slice(5)})}}
+function getWeek(d){var dt=new Date(d);var day=dt.getDay();var diff=dt.getDate()-day+(day===0?-6:1);dt.setDate(diff);return dt.toISOString().slice(0,10)}
+
+// ==================== TEAM CHARTS ====================
+function rChart(m){
+  var totalS=sessions.length,totalD=0,totalDur=0;sessions.forEach(function(s){totalD+=(s.dist||0);totalDur+=(s.dur||0)});
+  var h='<div class="tab on"><div class="g4">';
+  h+=mC("セッション",totalS,"件","#00E5A0");h+=mC("総距離",(totalD/1000).toFixed(1),"km","#0EA5E9");
+  h+=mC("総時間",totalDur,"分","#F59E0B");h+=mC("選手数",crew.length,"名","#8B5CF6");
+  h+='</div><div class="g2"><div class="cd"><div class="sh"><div class="sh-l"><em>📊</em><h2>カテゴリ分布</h2></div></div><div id="cc-cat"></div></div>';
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>📈</em><h2>週間ボリューム</h2></div></div><div id="cc-vol"></div></div></div>';
+  h+='<div class="g2"><div class="cd"><div class="sh"><div class="sh-l"><em>🎯</em><h2>ゾーン分布</h2></div></div><div id="cc-zone"></div></div>';
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>💓</em><h2>セッション別HR</h2></div></div><div id="cc-hr"></div></div></div>';
+  h+='</div>';m.innerHTML=h}
+
+function drawCatDist(){var el=$("cc-cat");if(!el)return;
+  var cats={};CATS.forEach(function(c){cats[c.id]=0});sessions.forEach(function(s){cats[s.cat]=(cats[s.cat]||0)+(s.dur||1)});
+  var W=420,H=CATS.length*22+10,ml=54,mr=40,mt=4,g=mkS(el,W,H);
+  var total=0;CATS.forEach(function(c){total+=cats[c.id]});total=total||1;
+  CATS.forEach(function(c,i){var y=mt+i*22,pct=cats[c.id]/total,bw=Math.max(pct*(W-ml-mr),2);
+    _s("text",{x:ml-4,y:y+13,"text-anchor":"end",fill:c.c,"font-size":"9","font-weight":"600"},g).textContent=c.ic+" "+c.nm;
+    _s("rect",{x:ml,y:y+2,width:bw,height:14,fill:c.c,rx:"3",opacity:".8"},g);
+    _s("text",{x:ml+bw+4,y:y+13,fill:"#94A3B8","font-size":"9"},g).textContent=Math.round(pct*100)+"%"})}
+
+function drawWeekVol(){var el=$("cc-vol");if(!el||!sessions.length){if(el)el.innerHTML='<div class="empty">データなし</div>';return}
+  var weeks={};sessions.forEach(function(s){if(!s.d)return;var wk=getWeek(s.d);if(!weeks[wk])weeks[wk]=0;weeks[wk]+=(s.dur||0)});
+  var wks=Object.keys(weeks).sort().slice(-10);if(!wks.length)return;
+  var W=420,H=140,ml=38,mr=8,mt=10,mb=22,cw=W-ml-mr,ch=H-mt-mb,g=mkS(el,W,H);
+  var mx=Math.max.apply(null,wks.map(function(w){return weeks[w]}))*1.15||1;
+  var bw=Math.min(cw/wks.length*.6,30),gap=cw/wks.length;
+  wks.forEach(function(w,i){var v=weeks[w],x=ml+i*gap+gap*.2,h2=v/mx*ch;
+    _s("rect",{x:x,y:mt+ch-h2,width:bw,height:Math.max(h2,2),fill:"#0EA5E9",rx:"3",opacity:".8"},g);
+    _s("text",{x:x+bw/2,y:H-4,"text-anchor":"middle",fill:"#64748B","font-size":"7"},g).textContent=w.slice(5);
+    _s("text",{x:x+bw/2,y:mt+ch-h2-4,"text-anchor":"middle",fill:"#0EA5E9","font-size":"8"},g).textContent=v+"m"})}
+
+function drawZoneDist(){var el=$("cc-zone");if(!el||!sessions.length){if(el)el.innerHTML='<div class="empty">データなし</div>';return}
+  var zones={};sessions.forEach(function(s){var z=s.zone||"—";if(z==="—")return;if(!zones[z])zones[z]=0;zones[z]+=(s.dur||1)});
+  var zks=Object.keys(zones);if(!zks.length){el.innerHTML='<div class="empty">ゾーンデータなし</div>';return}
+  var total=0;zks.forEach(function(k){total+=zones[k]});
+  var W=420,H=zks.length*22+10,ml=42,mr=40,mt=4,g=mkS(el,W,H);
+  var cs={UT1:"#3B82F6",UT2:"#22C55E",AT:"#F59E0B",VO2:"#EF4444",Race:"#00E5A0",AN:"#8B5CF6"};
+  zks.sort().forEach(function(k,i){var y=mt+i*22,pct=zones[k]/total,bw=Math.max(pct*(W-ml-mr),2),c=cs[k]||"#64748B";
+    _s("text",{x:ml-4,y:y+13,"text-anchor":"end",fill:c,"font-size":"9","font-weight":"600"},g).textContent=k;
+    _s("rect",{x:ml,y:y+2,width:bw,height:14,fill:c,rx:"3",opacity:".85"},g);
+    _s("text",{x:ml+bw+4,y:y+13,fill:"#94A3B8","font-size":"9"},g).textContent=Math.round(pct*100)+"%"})}
+
+function drawHRTrend(){var el=$("cc-hr");if(!el)return;
+  var pts=sessions.filter(function(s){return s.hr>0}).sort(function(a,b){return a.d.localeCompare(b.d)}).slice(-20);
+  if(!pts.length){el.innerHTML='<div class="empty">HRデータなし</div>';return}
+  var W=420,H=130,ml=38,mr=8,mt=10,mb=22,cw=W-ml-mr,ch=H-mt-mb,g=mkS(el,W,H);
+  var mn=Math.min.apply(null,pts.map(function(p){return p.hr}))-10,mx=Math.max.apply(null,pts.map(function(p){return p.hr}))+10;
+  function yP(v){return mt+ch*(1-(v-mn)/(mx-mn))}
+  [{v:175,c:"#EF4444"},{v:160,c:"#F59E0B"},{v:145,c:"#3B82F6"}].forEach(function(z){if(z.v>=mn&&z.v<=mx)_s("line",{x1:ml,x2:W-mr,y1:yP(z.v),y2:yP(z.v),stroke:z.c,"stroke-dasharray":"3,3",opacity:".4"},g)});
+  var lp=pts.map(function(p,i){return(i?"L":"M")+(ml+i*(cw/Math.max(pts.length-1,1)))+","+yP(p.hr)}).join(" ");
+  _s("path",{d:lp,fill:"none",stroke:"#FF6B8A","stroke-width":"1.5"},g);
+  pts.forEach(function(p,i){var x=ml+i*(cw/Math.max(pts.length-1,1)),c=p.hr>=175?"#EF4444":p.hr>=160?"#F59E0B":"#3B82F6";
+    _s("circle",{cx:x,cy:yP(p.hr),r:"3",fill:c},g);
+    var cc=catC(p.cat);_s("rect",{x:x-3,y:yP(p.hr)+6,width:6,height:3,fill:cc,rx:"1"},g)})}
+
+// ==================== PLAN ====================
+function rPlan(m){var h='<div class="tab on"><div class="cd"><div class="sh"><div class="sh-l"><em>🗓</em><h2>週間計画</h2></div><button class="btn btn-w btn-sm" onclick="rstPl()">リセット</button></div>';
+  var zc={UT1:"#3B82F6",AT:"#F59E0B",VO2:"#EF4444",Race:"#00E5A0",OFF:"#475569"};
+  plan.forEach(function(d,i){h+='<div class="pr" style="background:'+(d.z==="OFF"?"transparent":"#0d1422")+';opacity:'+(d.z==="OFF"?.5:1)+'" onclick="openPF('+i+')"><span style="font-size:14px;font-weight:800">'+esc(d.dy)+'</span><div class="pr-b" style="background:'+(zc[d.z]||"#475569")+'"></div><div><div style="font-size:9px;color:#64748B">AM</div><div style="font-size:11px">'+esc(d.am)+'</div></div><div><div style="font-size:9px;color:#64748B">PM</div><div style="font-size:11px;color:#64748B">'+esc(d.pm)+'</div></div>'+zoneBdg(d.z)+'</div>'});
+  h+='</div>';
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>💓</em><h2>ゾーン参照</h2></div></div>';
+  [{z:"UT2",hr:"130-145",la:"<1.5",p:"回復",c:"#22C55E"},{z:"UT1",hr:"145-160",la:"1.5-2.0",p:"有酸素基盤",c:"#3B82F6"},{z:"AT",hr:"160-175",la:"2.0-4.0",p:"閾値向上",c:"#F59E0B"},{z:"VO2",hr:"175-190",la:"4.0-8.0",p:"最大酸素摂取量",c:"#EF4444"},{z:"AN",hr:"185+",la:"8.0+",p:"無酸素能力",c:"#8B5CF6"}].forEach(function(z){h+='<div class="zr" style="background:'+z.c+'08;border-left:3px solid '+z.c+'"><span class="mono" style="font-weight:800;color:'+z.c+';font-size:12px">'+z.z+'</span><span class="mono" style="font-size:10px;color:#64748B">HR '+z.hr+'</span><span class="mono" style="font-size:10px;color:#64748B">La '+z.la+'</span><span style="font-size:10px">'+z.p+'</span></div>'});
+  h+='<div class="ev"><b>エビデンス：</b>Seiler (2010) / Ingham (2008) / Laursen (2002)</div></div></div>';m.innerHTML=h}
+function openPF(i){var d=plan[i];var zns=["UT1","UT2","AT","VO2","Race","AN","OFF"];
+  var h='<h3>🗓 '+esc(d.dy)+'曜日</h3><div class="fg"><label>AM</label><textarea id="pa">'+esc(d.am)+'</textarea></div><div class="fg"><label>PM</label><textarea id="pp">'+esc(d.pm)+'</textarea></div><div class="fg-row"><div class="fg"><label>ゾーン</label><select id="pz">';zns.forEach(function(z){h+='<option value="'+z+'"'+(d.z===z?" selected":"")+'>'+z+'</option>'});
+  h+='</select></div><div class="fg"><label>負荷(0-5)</label><input id="pl" type="number" min="0" max="5" value="'+d.l+'"></div></div><div class="modal-btns"><button class="btn btn-s" onclick="closeM()">×</button><button class="btn btn-p" onclick="savePF('+i+')">保存</button></div>';openM(h)}
+function savePF(i){plan[i].am=$("pa").value.trim()||"—";plan[i].pm=$("pp").value.trim()||"—";plan[i].z=$("pz").value;plan[i].l=Math.min(5,Math.max(0,parseInt($("pl").value)||0));savePl();closeM();render();toast("更新")}
+function rstPl(){if(!confirm("リセット？"))return;plan=JSON.parse(JSON.stringify(DEF_PL));savePl();render()}
+
+// ==================== IMPORT ====================
+function rImp(m){var h='<div class="tab on"><div class="g2">';
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>⌚</em><h2>Garmin FIT</h2></div></div><div class="dropzone" onclick="$(\'if1\').click()"><em>⌚</em><p>.FITファイル</p><small>HR・距離・時間を自動取得</small></div><input type="file" id="if1" accept=".fit" style="display:none" onchange="pFIT(this)"><div id="r1"></div></div>';
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>🚣</em><h2>Concept2 CSV</h2></div></div><div class="dropzone" onclick="$(\'if2\').click()"><em>🚣</em><p>.CSVファイル</p><small>テスト結果を自動検出</small></div><input type="file" id="if2" accept=".csv" style="display:none" onchange="pC2(this)"><div id="r2"></div></div></div>';
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>📂</em><h2>OARCRAFT JSON復元</h2></div></div><div class="dropzone" onclick="$(\'if3\').click()"><em>📄</em><p>JSONバックアップ</p></div><input type="file" id="if3" accept=".json" style="display:none" onchange="pJSON(this)"><div id="r3"></div></div>';
+  h+='</div>';m.innerHTML=h}
+
+function pFIT(inp){var f=inp.files[0];if(!f)return;inp.value="";var r=new FileReader();r.onload=function(e){try{
+  var buf=new Uint8Array(e.target.result);if(buf.length<14)throw"小さすぎ";
+  var avgHR=0,hrN=0;for(var i=buf[0];i<buf.length-2;i++){if(buf[i]>=60&&buf[i]<=220&&buf[i+1]===0){avgHR+=buf[i];hrN++}}
+  var hr=hrN>0?Math.round(avgHR/hrN):0;
+  var zone=hr>=175?"VO2":hr>=160?"AT":hr>=145?"UT1":hr>0?"UT2":"—";
+  sessions.unshift({d:new Date().toISOString().slice(0,10),cat:"OTW",zone:zone,who:"全員",ds:"FIT取込",sp:"—",r:0,nt:"Garminから取込",hr:hr,dist:0,dur:0});
+  saveSs();$("r1").innerHTML='<div class="imp-res imp-ok">✅ HR:'+hr+'bpm / Zone:'+zone+'</div>';toast("FIT取込")
+}catch(err){$("r1").innerHTML='<div class="imp-res imp-err">❌ '+err+'</div>'}};r.readAsArrayBuffer(f)}
+
+function pC2(inp){var f=inp.files[0];if(!f)return;inp.value="";var r=new FileReader();r.onload=function(e){try{
+  var lines=e.target.result.split(/\r?\n/).filter(function(l){return l.trim()});if(lines.length<2)throw"データなし";
+  var cols=lines[0].split(",").map(function(c){return c.trim().toLowerCase().replace(/"/g,"")});
+  var iD=fC(cols,["date","日付"]),iDi=fC(cols,["distance","work distance","dist"]),iT=fC(cols,["time","work time"]),iP=fC(cols,["pace","avg pace","avg split"]),iSR=fC(cols,["stroke rate","avg spm","s/m"]),iHR=fC(cols,["avg heart rate","hr"]);
+  var added=0;for(var i=1;i<lines.length;i++){var row=pRow(lines[i]);if(row.length<2)continue;
+    var date=iD>=0?pDate(row[iD]):new Date().toISOString().slice(0,10);var dist=iDi>=0?parseInt(row[iDi].replace(/\D/g,""))||0:0;var time=iT>=0?row[iT].trim():"—";var pace=iP>=0?row[iP].trim():"—";
+    if(dist>=1900&&dist<=6100){ergTests.push({d:date,who:"—",dist:dist,time:time,split:pace});added++}
+    sessions.unshift({d:date,cat:"ERG",zone:"AT",who:"—",ds:dist+"m",sp:pace,r:iSR>=0?parseInt(row[iSR])||0:0,nt:"C2 "+time,hr:iHR>=0?parseInt(row[iHR])||0:0,dist:dist,dur:pDur(time)})}
+  sessions.sort(function(a,b){return b.d.localeCompare(a.d)});saveEt();saveSs();
+  $("r2").innerHTML='<div class="imp-res imp-ok">✅ '+(lines.length-1)+'件 / テスト'+added+'件</div>';toast("C2取込")
+}catch(err){$("r2").innerHTML='<div class="imp-res imp-err">❌ '+err+'</div>'}};r.readAsText(f)}
+
+function pJSON(inp){var f=inp.files[0];if(!f)return;inp.value="";var r=new FileReader();r.onload=function(e){try{var d=JSON.parse(e.target.result);
+  if(d.crew){crew=d.crew;saveCr()}if(d.sessions){sessions=migrateSessions(d.sessions);saveSs()}if(d.plan){plan=d.plan;savePl()}if(d.ergTests){ergTests=d.ergTests;saveEt()}
+  render();toast("復元完了");$("r3").innerHTML='<div class="imp-res imp-ok">✅ 完了</div>'}catch(err){$("r3").innerHTML='<div class="imp-res imp-err">❌ '+err+'</div>'}};r.readAsText(f)}
+
+function fC(c,n){for(var i=0;i<c.length;i++)for(var j=0;j<n.length;j++)if(c[i].indexOf(n[j])>=0)return i;return-1}
+function pRow(l){var r=[],c="",q=false;for(var i=0;i<l.length;i++){var ch=l[i];if(ch==='"')q=!q;else if(ch===","&&!q){r.push(c);c=""}else c+=ch}r.push(c);return r}
+function pDate(s){if(!s)return new Date().toISOString().slice(0,10);s=s.replace(/"/g,"").trim();var m=s.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);if(m)return m[1]+"-"+String(m[2]).padStart(2,"0")+"-"+String(m[3]).padStart(2,"0");return new Date().toISOString().slice(0,10)}
+function pDur(s){if(!s||s==="—")return 0;s=s.replace(/"/g,"").trim();var p=s.split(":");return p.length===3?parseInt(p[0])*60+parseInt(p[1]):p.length===2?parseInt(p[0]):0}
+
+// ==================== DATA ====================
+function rData(m){var b=0;try{for(var k in localStorage)if(k.indexOf("oc_")===0)b+=(localStorage[k]||"").length*2}catch(e){}
+  var h='<div class="tab on"><div class="g4">'+mC("選手",crew.length,"名","#00E5A0")+mC("記録",sessions.length,"件","#0EA5E9")+mC("テスト",ergTests.length,"件","#F59E0B")+mC("容量",(b/1024).toFixed(1),"KB","#8B5CF6")+'</div>';
+  h+='<div class="cd"><div class="sh"><div class="sh-l"><em>📤</em><h2>エクスポート</h2></div></div><div class="btns">';
+  h+='<button class="btn btn-p" onclick="expJ()">📄 JSON全体</button>';
+  h+='<button class="btn btn-s" onclick="expC(\'crew\')">⛵ 選手</button>';
+  h+='<button class="btn btn-s" onclick="expC(\'sess\')">📝 記録</button>';
+  h+='<button class="btn btn-s" onclick="expC(\'plan\')">🗓 計画</button>';
+  h+='</div></div>';
+  h+='<div class="cd" style="border-color:#FF475733"><div class="sh"><div class="sh-l"><em>⚠️</em><h2 style="color:#FF4757">初期化</h2></div></div><button class="btn btn-d" onclick="rstA()">🗑 全データ初期化</button></div></div>';m.innerHTML=h}
+
+function dl(n,c,t){var b=new Blob([c],{type:t});var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=n;a.click()}
+function expJ(){dl("oarcraft_"+new Date().toISOString().slice(0,10)+".json",JSON.stringify({crew:crew,sessions:sessions,plan:plan,ergTests:ergTests,v:"0.4"},null,2),"application/json");toast("JSON保存")}
+function expC(t){var r=[];
+  if(t==="crew"){r.push("席,名前,2K,体重,パワー,UT1,AT,状態,傾向");crew.forEach(function(c){r.push([c.seat,c.nm,c.erg,c.w,c.pw,c.u1,c.at,c.st,c.tr].join(","))})}
+  else if(t==="sess"){r.push("日付,カテゴリ,ゾーン,対象,内容,Split,Rate,HR,距離m,時間min,メモ");sessions.forEach(function(s){r.push([s.d,s.cat,s.zone,s.who,s.ds,s.sp,s.r,s.hr||0,s.dist||0,s.dur||0,'"'+(s.nt||"").replace(/"/g,'""')+'"'].join(","))})}
+  else if(t==="plan"){r.push("曜日,AM,PM,ゾーン,負荷");plan.forEach(function(d){r.push([d.dy,'"'+d.am+'"','"'+d.pm+'"',d.z,d.l].join(","))})}
+  dl("oarcraft_"+t+".csv","\uFEFF"+r.join("\n"),"text/csv;charset=utf-8");toast("CSV保存")}
+function rstA(){if(!confirm("全初期化？"))return;crew=JSON.parse(JSON.stringify(DEF_CR));sessions=JSON.parse(JSON.stringify(DEF_SS));plan=JSON.parse(JSON.stringify(DEF_PL));ergTests=[];saveCr();saveSs();savePl();saveEt();render();toast("初期化完了")}
+
+// ==================== INIT ====================
+initNav();render();
+</script>
+</body>
+</html>
